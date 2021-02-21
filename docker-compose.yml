@@ -57,7 +57,7 @@ services:
 
   dashboard:
     <<: *api
-    command: flower -A core --port=5556 --broker=redis://redis:6399/0
+    command: flower -A core --port=5555 --broker=redis://redis:6379/0
     ports:
       - 5556:5555
     env_file:
@@ -70,10 +70,10 @@ services:
   locust-master:
     image: locustio/locust
     ports:
-      - '8089:8089'
+      - '8099:8089'
     volumes:
       - ./app:/app
-    command: -f /app/locustfile.py --master -H http://localhost:8000
+    command: -f /app/locustfile.py --master -H http://localhost:8001
     depends_on:
       - api
 
