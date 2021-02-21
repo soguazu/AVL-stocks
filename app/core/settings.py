@@ -355,7 +355,7 @@ SPECTACULAR_SETTINGS = {
     'DESCRIPTION': 'API Doc',
     'VERSION': '1.0.0',
     'LICENCE': {'name': 'BSD License'},
-    'CONTACT': {'name': 'Daniel Ale', 'email': 'daniel.ale@prunedge.com'},
+    'CONTACT': {'name': 'Stanley oguazu', 'email': 'soguazu@gmail.com'},
 
     # Oauth2 related settings. used for example by django-oauth2-toolkit.
     # https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.3.md#oauth-flows-object
