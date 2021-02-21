@@ -2,22 +2,25 @@ name: Deploy Development
 
 on:
   push:
-    branches: [develop]
+    branches:
+      - develop
   pull_request:
-    branches: [develop]
+    branches:
+      - develop
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout master
+        uses: actions/checkout@master
 
-      - name: Push to server and deploy
+      - name: Pull from GitHub
         uses: appleboy/ssh-action@master
+
         with:
-          host: ${{ secrets.DEV_HOST }}
-          USERNAME: ${{ secrets.DEV_USERNAME }}
-          PORT: ${{ secrets.PORT }}
-          KEY: ${{ secrets.DEV_SSHKEY }}
+          HOST: ${{ secrets.HOST_IP }}
+          USERNAME: ${{ secrets.USERNAME }}
+          PASSWORD: ${{ secrets.PASSWORD }}
           script: cd ${{ secrets.DEV_PATH }} && ls && git pull && docker-compose up --build -d

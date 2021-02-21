@@ -58,18 +58,7 @@ class AuthViewsets(viewsets.ModelViewSet):
             permission_classes = [IsAuthenticated]
         return [permission() for permission in permission_classes]
 
-    @action(methods=['POST'], detail=False, serializer_class=CreateUserSerializer, permission_classes=[IsAuthenticated, IsAdmin], url_path='invite-user')
-    def invite_user(self, request, pk=None):
-        """This endpoint invites new user by admin"""
-        try:
-            serializer = self.get_serializer(data=request.data)
-            if serializer.is_valid():
-                serializer.save()
-                return Response({'success': True}, status=status.HTTP_200_OK)
-            return Response({'success': False, 'errors': serializer.errors}, status.HTTP_400_BAD_REQUEST)
-        except Exception as e:
-            capture_exception(e)
-            return Response({'message': str(e)}, status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 
     @action(methods=['POST'], detail=False, serializer_class=VerifyTokenSerializer, url_path='verify-token')
     def verify_token(self, request, pk=None):

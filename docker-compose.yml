@@ -1,16 +1,16 @@
-version: "3.7"
+version: '3.7'
 
 services:
   api: &api
     build:
       context: .
       dockerfile: docker/dev/Dockerfile
-    image: profmcdan/api-starter
-    command: python manage.py runserver 0.0.0.0:8000
+    image: soguazu/avl
+    command: python manage.py runserver 0.0.0.0:8001
     volumes:
       - ./app:/app
     ports:
-      - 8000:8000
+      - 8001:8001
     env_file:
       - ./.env
     depends_on:
@@ -29,7 +29,7 @@ services:
   redis:
     image: redis:alpine
     ports:
-      - "6379:6379"
+      - '6379:6379'
 
   celery:
     <<: *api
@@ -70,7 +70,7 @@ services:
   locust-master:
     image: locustio/locust
     ports:
-      - "8089:8089"
+      - '8089:8089'
     volumes:
       - ./app:/app
     command: -f /app/locustfile.py --master -H http://localhost:8000
