@@ -67,15 +67,15 @@ services:
       - redis
       - celery
 
-  # locust-master:
-  #   image: locustio/locust
-  #   ports:
-  #     - '8099:8089'
-  #   volumes:
-  #     - ./app:/app
-  #   command: -f /app/locustfile.py --master -H http://localhost:8001
-  #   depends_on:
-  #     - api
+  locust-master:
+    image: locustio/locust
+    ports:
+      - '8099:8089'
+    volumes:
+      - ./app:/app
+    command: -f /app/locustfile.py --master -H http://localhost:8001
+    depends_on:
+      - api
 
   locust-worker:
     image: locustio/locust

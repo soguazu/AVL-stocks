@@ -23,4 +23,4 @@ jobs:
           HOST: ${{ secrets.HOST_IP }}
           USERNAME: ${{ secrets.USERNAME }}
           PASSWORD: ${{ secrets.PASSWORD }}
-          script: cd ${{ secrets.DEV_PATH }} && ls && git pull && docker-compose up --build -d
+          script: cd ${{ secrets.DEV_PATH }} && ls && git pull origin develop && docker-compose up --build -d
