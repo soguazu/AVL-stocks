@@ -24,12 +24,12 @@ services:
     env_file:
       - ./.env
     ports:
-      - 5432:5432
+      - 5433:5432
 
   redis:
     image: redis:alpine
     ports:
-      - '6379:6379'
+      - '6399:6379'
 
   celery:
     <<: *api
@@ -59,7 +59,7 @@ services:
     <<: *api
     command: flower -A core --port=5555 --broker=redis://redis:6379/0
     ports:
-      - 5555:5555
+      - 5556:5555
     env_file:
       - ./.env
     depends_on:
