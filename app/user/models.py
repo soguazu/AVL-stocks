@@ -49,6 +49,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     phone = models.CharField(max_length=17, blank=True, null=True)
     roles = ArrayField(models.CharField(max_length=20, blank=True,
                                         choices=USER_ROLE), default=default_role, size=4)
+    bio = models.TextField(blank=True, null=True)
     twitter = models.CharField(max_length=200, blank=True, null=True)
     facebook = models.CharField(max_length=200, blank=True, null=True)
     instagram = models.CharField(max_length=200, blank=True, null=True)
