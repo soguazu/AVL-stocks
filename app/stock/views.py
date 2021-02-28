@@ -23,8 +23,9 @@ class StockViewset(viewsets.ModelViewSet):
     
     def list(self, request, pk=None):
         response = None
+        page = request.GET.get('page', None)
         if pk == None:
-            response = requests.get(f'http://mboum.com/api/v1/co/collections/?list=day_gainers&start={page}&apikey={settings.STOCK_API_KEY}')
+            response = requests.get(f'http://mboum.com/api/v1/tr/trending?start={page}&apikey={settings.STOCK_API_KEY}')
             
             
             
