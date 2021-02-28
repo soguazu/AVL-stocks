@@ -18,16 +18,17 @@ class ListUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = get_user_model()
         fields = ['id', 'firstname', 'lastname', 'email', 'roles',
-                  'image', 'verified', 'last_login', 'created_at']
+                  'image', 'verified', 'last_login', 'created_at',
+                  'twitter', 'facebook', 'instagram']
 
 
 class CreateUserSerializer(serializers.ModelSerializer):
     """Serializer for user object"""
-
     class Meta:
         model = get_user_model()
         fields = ('id', 'email', 'password', 'firstname', 'lastname', 'verified',
-                  'phone', 'image', 'roles', 'last_login', 'created_at')
+                  'phone', 'image', 'roles', 'last_login', 'created_at',
+                  'twitter', 'facebook', 'instagram')
         extra_kwargs = {'password': {'write_only': True, 'min_length': 8},
                         'last_login': {'read_only': True}}
 

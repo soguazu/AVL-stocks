@@ -304,6 +304,7 @@ TOKEN_LIFESPAN = 24  # hours
 CELERY_BROKER_URL = os.environ.get("CELERY_BROKER", "redis://redis:6379")
 CELERY_RESULT_BACKEND = os.environ.get("CELERY_BROKER", "redis://redis:6379")
 FLOWER_BASIC_AUTH = os.environ.get('FLOWER_BASIC_AUTH')
+STOCK_API_KEY=os.environ.get('STOCK_API_KEY')
 
 CHANNEL_LAYERS = {
     'default': {
