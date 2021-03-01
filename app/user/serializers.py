@@ -4,6 +4,7 @@ from django.utils.translation import ugettext_lazy as _
 from rest_framework import serializers, exceptions
 from django.utils.crypto import get_random_string
 from django.db import IntegrityError
+from django.db import models
 from django.db.models import Q
 from django.conf import settings
 from django.core.exceptions import PermissionDenied
@@ -12,6 +13,8 @@ from dateutil.relativedelta import relativedelta
 from email_validator import validate_email, EmailNotValidError
 from .models import Token, User
 from .tasks import send_new_user_email, send_password_reset_email
+from stock.models import (Prediction, Follow)
+from stock.serializers import (PredictionSerializer, FollowSerializer)
 
 
 class ListUserSerializer(serializers.ModelSerializer):
@@ -24,13 +27,24 @@ class ListUserSerializer(serializers.ModelSerializer):
 
 class CreateUserSerializer(serializers.ModelSerializer):
     """Serializer for user object"""
+    total_predictions = serializers.SerializerMethodField('total_prediction')
+    predictions = serializers.SerializerMethodField('get_predictions', read_only=True)
+    followers = serializers.SerializerMethodField('total_followers', read_only=True)
+    following = serializers.SerializerMethodField('total_following', read_only=True)
+    people = serializers.SerializerMethodField('get_people_following', read_only=True)
+    
     class Meta:
         model = get_user_model()
         fields = ('id', 'email', 'password', 'firstname', 'lastname', 'verified',
                   'phone', 'image', 'roles', 'last_login', 'created_at',
-                  'twitter', 'facebook', 'instagram', 'bio')
+                  'twitter', 'facebook', 'instagram', 'bio', 'total_predictions',
+                  'predictions', 'followers', 'following', 'people')
+        
+        # fields = '__all__'
+        
         extra_kwargs = {'password': {'write_only': True, 'min_length': 8},
-                        'last_login': {'read_only': True}}
+                        'last_login': {'read_only': True},
+                        'total_predictions': {'read_only': True},}
 
     def validate(self, attrs):
         email = attrs.get('email', None)
@@ -45,6 +59,7 @@ class CreateUserSerializer(serializers.ModelSerializer):
             except EmailNotValidError as e:
                 raise serializers.ValidationError(e)
         return super().validate(attrs)
+    
 
     def create(self, validated_data):
         user = User.objects.create_user(**validated_data)
@@ -63,6 +78,39 @@ class CreateUserSerializer(serializers.ModelSerializer):
             instance.set_password(validated_data.get('password'))
             instance.save()
         return instance
+    
+    
+    def total_prediction(self, obj):
+        count = Prediction.objects.filter(user=obj).count()
+        return count
+    
+    
+    def get_predictions(self, obj):
+        predictions = Prediction.objects.filter(user=obj)
+        serializer = PredictionSerializer(predictions, many=True)
+        return serializer.data
+    
+    
+    def total_followers(self, obj):
+        count = Follow.objects.filter(following=obj).count()
+        return count
+    
+    def total_following(self, obj):
+        count = Follow.objects.filter(follower=obj).count()
+        return count
+    
+    
+    def get_people_following(self, obj):
+        follows = Follow.objects.all()
+        users = User.objects.filter(id__in=models.Subquery(follows.values('following__id')), user_follower__follower=self.context['request'].user)
+        print(users.query)
+        if users is None:
+            return []
+           
+        serializer = ListUserSerializer(users, many=True)
+        return serializer.data
+    
+    
 
 
 class CustomObtainTokenPairSerializer(TokenObtainPairSerializer):

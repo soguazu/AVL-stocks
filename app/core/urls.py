@@ -26,5 +26,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/v1/auth/', include('user.urls')),
     path('chat/', include('chat.urls')),
-    path('stock/', include('stock.urls'))
+    path('prediction/', include('stock.urls'))
 ]

@@ -46,7 +46,7 @@ class AuthViewsets(viewsets.ModelViewSet):
             return InitializePasswordResetSerializer
         elif self.action == 'verify_token':
             return VerifyTokenSerializer
-        elif self.action in ['create', 'invite_user']:
+        elif self.action in ['create', 'invite_user', 'retrieve']:
             return CreateUserSerializer
         return super().get_serializer_class()
 

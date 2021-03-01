@@ -10,22 +10,40 @@ from rest_framework.decorators import action
 from sentry_sdk import capture_exception
 from .models import (Prediction, Like, Follow, Bookmark)
 from .serializers import (PredictionSerializer, BookmarkSerializer, ListBookmarkSerializer,
-                          BookmarkNoSerializer, LikeSerializer, FollowSerializer)
+                          BookmarkNoSerializer, LikeSerializer, FollowSerializer,
+                          ListPredictionSerializer, PredictionNoSerializer, FollowNoSerializer)
 # Create your views here.
 
 
 class PredictionViewset(viewsets.ModelViewSet):
     queryset = Prediction.objects.all()
     serializer_class = PredictionSerializer
-    http_method_names = ['get']
+    http_method_names = ['get', 'post', 'delete']
     filter_backends = [DjangoFilterBackend,
                        filters.SearchFilter, filters.OrderingFilter]
     search_fields = ['user__firstname', 'user__lastname']
     ordering_fields = ['user__firstname', 'user__lastname', 'symbol']
     permission_classes = [IsAuthenticatedOrReadOnly]
     
+    def get_serializer_class(self):
+        if self.action in [ 'create', 'retrieve']:
+            return PredictionSerializer
+        
+        elif self.action in ['list']:
+            return ListPredictionSerializer
+        
+        elif self.action in ['destroy']:
+            return PredictionNoSerializer
+        
+        return super().get_serializer_class()
     
-    def list(self, request, pk=None):
+    
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+    
+    
+    @action(methods=['GET'], detail=False)
+    def get_stocks(self, request, pk=None):
         try:
             page = request.GET.get('page', 1)
             response = requests.get(f'https://mboum.com/api/v1/co/collections/?list=day_gainers&start={page}&apikey={settings.STOCK_API_KEY}')
@@ -36,9 +54,6 @@ class PredictionViewset(viewsets.ModelViewSet):
             return Response({'success': False, 'errors': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         
     
-    
-    def retrieve(self, request, pk=None):
-        pass
     
     
     @action(methods=['GET'], detail=False, url_path='symbol/(?P<symbol>[^/.]+)')
@@ -127,6 +142,16 @@ class FollowViewset(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticatedOrReadOnly]
     
     
+    def get_serializer_class(self):
+        if self.action in [ 'create', 'retrieve', 'list']:
+            return FollowSerializer
+        
+        elif self.action in ['destroy']:
+            return FollowNoSerializer
+        
+        return super().get_serializer_class()
+    
+    
     def get_permissions(self):
         permission_classes = self.permission_classes
         if self.action in ['retrieve', 'list','create', 'partial_update', 'destroy']:
@@ -135,4 +160,4 @@ class FollowViewset(viewsets.ModelViewSet):
     
     
     def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+        serializer.save(follower=self.request.user)

@@ -33,6 +33,7 @@ class BaseModel(models.Model):
 class Prediction(BaseModel):
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="client")
+    last_price = models.FloatField(blank=True, null=True)
     symbol = models.CharField(max_length=25)
     remarks = models.TextField()
     prediction = models.CharField(max_length=25, choices=PREDICTION_OPTIONS)
